@@ -1,2 +1,2 @@
 # radioplays-parser
-The script parce http://audio.arjlover.net/audio/ site. Organize data and store it in cloud for future using.
+The script parse [that site](http://audio.arjlover.net/audio/) with USSR radioplays ansd fairytales, organize parsed data and store it in the cloud for future using.
