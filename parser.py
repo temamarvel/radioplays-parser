@@ -2,12 +2,13 @@ from bs4 import BeautifulSoup
 import requests
 import os
 from dotenv import load_dotenv
+from colored import Fore, Back, Style
 
 load_dotenv()
 
 root_url = 'http://audio.arjlover.net/audio/'
 
-print("===================")
+print(f"{Fore.green}==================={Style.reset}")
 
 count = 0
 
