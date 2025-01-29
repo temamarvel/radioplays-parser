@@ -1,5 +1,8 @@
 import os
 import boto3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 YANDEX_KEY_ID = os.getenv("YANDEX_KEY_ID")
 YANDEX_KEY_SECRET = os.getenv("YANDEX_KEY_SECRET")
@@ -15,7 +18,7 @@ def get_s3_client():
 
 s3_client = get_s3_client()
 
-# s3_client.put_object(Bucket=YANDEX_BUCKET, Key='object_name', Body='TEST')
+s3_client.put_object(Bucket=YANDEX_BUCKET, Key='object_name', Body='TEST')
 
 #s3_client.upload_file('123.mp3', YANDEX_BUCKET, '123.mp3')
 
