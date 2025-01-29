@@ -32,3 +32,5 @@ def scan_folder(url, level):
             continue
         new_url = f"{url}{name}"
         scan_folder(new_url, level + 1)
+
+scan_folder(root_url, 0)
