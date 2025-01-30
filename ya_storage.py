@@ -18,7 +18,8 @@ def get_s3_client():
 
 s3_client = get_s3_client()
 
-s3_client.put_object(Bucket=YANDEX_BUCKET, Key='object_name', Body='TEST')
+# s3_client.put_object(Bucket=YANDEX_BUCKET, Key='test/object_name', Body='TEST')
+# s3_client.put_object(Bucket=YANDEX_BUCKET, Key='test/object_name/test3', Body='TEST')
 
 #s3_client.upload_file('123.mp3', YANDEX_BUCKET, '123.mp3')
 
