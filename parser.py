@@ -5,7 +5,7 @@ from colored import Fore, Back, Style
 from downloader import download_file
 
 
-DOWNLOADS_LIMIT = 2
+DOWNLOADS_LIMIT = 1000
 
 
 root_url = 'http://audio.arjlover.net/audio/'
@@ -56,11 +56,11 @@ def download_audio(url, name):
 
     print(f"{Fore.yellow}Start download file: {Style.bold}{local_file_name}{Style.reset}")
     if download_file(f"{root_url}{url}{name}", local_file_name):
-        print(f"\t{Fore.green}The file is successfully downloaded{Style.reset}")
+        print(f"\t{Fore.green}Success! The file is successfully downloaded{Style.reset}")
         # uncomment when you need to log downloaded files
         # downloaded_audio.update({f"{url}{name}": filename})
     else:
-        print(f"\t{Fore.red}Something wrong with file downloading{Style.reset}")
+        print(f"\t{Fore.red}Error! Something wrong with file downloading{Style.reset}")
 
 def scan_folder(url):
     full_url = f"{root_url}{url}"
@@ -96,11 +96,13 @@ def scan_folder(url):
 get_root_folders(root_url)
 
 downloads_count = 0
+root_folders_count = len(root_folders)
 
 for folder_url in root_folders.keys():
     if downloads_count == DOWNLOADS_LIMIT:
         break
     downloads_count += 1
+    print(f"{Style.bold}{Fore.blue}[{downloads_count} / {root_folders_count} ] {int(100 / (root_folders_count / 100))}% complete {Style.reset}")
     root_folders[folder_url] = scan_folder(folder_url)
 
 
