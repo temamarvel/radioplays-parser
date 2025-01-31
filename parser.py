@@ -5,7 +5,7 @@ from colored import Fore, Back, Style
 from downloader import download_file
 
 
-DOWNLOADS_LIMIT = 3
+DOWNLOADS_LIMIT = 2
 
 
 root_url = 'http://audio.arjlover.net/audio/'
@@ -50,6 +50,10 @@ def download_audio(url, name):
         os.makedirs(local_folder_path)
 
     local_file_name = f"{local_folder_path}{name}"
+    if os.path.exists(local_file_name):
+        print(f"{Fore.yellow}The file exists: {Style.bold}{local_file_name}{Style.reset}")
+        return
+
     print(f"{Fore.yellow}Start download file: {Style.bold}{local_file_name}{Style.reset}")
     if download_file(f"{root_url}{url}{name}", local_file_name):
         print(f"\t{Fore.green}The file is successfully downloaded{Style.reset}")
@@ -108,12 +112,15 @@ print(f"==================={Style.reset}")
 good_count = 0
 bad_count = 0
 
+
 for key, value in root_folders.items():
     if value == 1:
         good_count += 1
+        # uncomment when need to show log of downloaded audio and count audio files inside folder
         print(f"{Fore.green}{key} : {value}{Style.reset}")
     else:
         bad_count += 1
+        # uncomment when need to show log of downloaded audio and count audio files inside folder
         print(f"{Fore.red}{key} : {value}{Style.reset}")
 
 print()
