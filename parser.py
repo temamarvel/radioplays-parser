@@ -2,115 +2,112 @@ from bs4 import BeautifulSoup
 import requests
 import os
 from colored import Fore, Back, Style
-import re
+from downloader import download_file
+
+
+DOWNLOADS_LIMIT = 3
+
 
 root_url = 'http://audio.arjlover.net/audio/'
 save_folder = "audio/"
 
-print(f"{Fore.green}==================={Style.reset}")
 
-dictionary = dict()
+print(f"{Fore.yellow}== START =={Style.reset}")
+print(f"{Fore.yellow}== Parse audio files from {root_url} =={Style.reset}")
+print()
+
+# uncomment when you need to log downloaded files
+# downloaded_audio = dict()
 
 root_folders = dict()
 
-count = 0
 
-
-def get_root_folders(url):
+def get_parsed_soup(url):
     response = requests.get(url)
-
     if response.status_code != 200:
         return
 
-    bs = BeautifulSoup(response.text, "html.parser")
+    return BeautifulSoup(response.text, "html.parser")
+
+
+def is_trash_link(ref_name):
+    return "?C" in ref_name or "../" in ref_name
+
+
+def get_root_folders(url):
+    bs = get_parsed_soup(url)
 
     for link in bs.find_all('a'):
-        if count == 500:
-            return
         name = link.get('href')
-        if "?C" in name or "../" in name or not name.endswith('/'):
+        if is_trash_link(name) or not name.endswith('/'):
             continue
 
         root_folders.update({name: 0})
 
+def download_audio(url, name):
+    local_folder_path = f"{save_folder}{url}"
+    if not os.path.exists(local_folder_path):
+        os.makedirs(local_folder_path)
 
-def scan_folder(url, level):
-    # print(url)
+    local_file_name = f"{local_folder_path}{name}"
+    print(f"{Fore.yellow}Start download file: {Style.bold}{local_file_name}{Style.reset}")
+    if download_file(f"{root_url}{url}{name}", local_file_name):
+        print(f"\t{Fore.green}The file is successfully downloaded{Style.reset}")
+        # uncomment when you need to log downloaded files
+        # downloaded_audio.update({f"{url}{name}": filename})
+    else:
+        print(f"\t{Fore.red}Something wrong with file downloading{Style.reset}")
 
-    response = requests.get(url)
+def scan_folder(url):
+    full_url = f"{root_url}{url}"
 
-    if response.status_code != 200:
-        return 0
-
-    bs = BeautifulSoup(response.text, "html.parser")
-
-    # links = bs.find_all('a')
-    # print(links.__len__())
+    bs = get_parsed_soup(full_url)
 
     mp3count = 0
 
     for link in bs.find_all('a'):
         name = link.get('href')
-        if "?C" in name or "../" in name:
+
+        if is_trash_link(name):
             continue
 
         path = os.path.splitext(name)
-        ext = path[1]
         filename = path[0]
-        # print('\t' * level + name)
+        ext = path[1]
+
+        new_url = f"{url}{name}"
+
         if ext == '.mp3':
             mp3count += 1
-            short_url = url.replace(root_url, "")
+            download_audio(url, name)
 
-            folder_path = f"{save_folder}{short_url}"
-            if not os.path.exists(folder_path):
-                os.makedirs(folder_path)
-
-            dictionary.update({f"{short_url}{name}": filename})
         if ext != '':
             continue
-        new_url = f"{url}{name}"
-        mp3count += scan_folder(new_url, level + 1)
+
+        mp3count += scan_folder(new_url)
 
     return mp3count
 
 
 get_root_folders(root_url)
 
-# for key, value in root_folders.items():
-#     print(f"{key} : {value}")
-
+downloads_count = 0
 
 for folder_url in root_folders.keys():
-    count += 1
-    if count == 10:
+    if downloads_count == DOWNLOADS_LIMIT:
         break
-    root_folders[folder_url] = scan_folder(f"{root_url}{folder_url}", 1)
-
-# scan_folder(root_url, 0)
-print(f"{Fore.green}===================")
-print("end scan")
-print(f"==================={Style.reset}")
-
-RE_D = re.compile('\d')
+    downloads_count += 1
+    root_folders[folder_url] = scan_folder(folder_url)
 
 
-def has_nums(string):
-    return RE_D.search(string)
-
-
-# for key, value in dictionary.items():
-#     if has_nums(value):
-#         print(f"{Fore.red}{key} : {value}{Style.reset}")
-#     else:
-#         print(f"{Fore.green}{key} : {value}{Style.reset}")
-
-print(f"{Fore.green}===================")
-print("mp3 counts")
+print()
+print(f"{Fore.yellow}===================")
+print("MP3 COUNTS")
 print(f"==================={Style.reset}")
 
 good_count = 0
 bad_count = 0
+
 for key, value in root_folders.items():
     if value == 1:
         good_count += 1
@@ -119,6 +116,9 @@ for key, value in root_folders.items():
         bad_count += 1
         print(f"{Fore.red}{key} : {value}{Style.reset}")
 
-print(f"good_count = {good_count}")
-print(f"bad_count = {bad_count}")
-# print(f"{key} : {value}")
+print()
+print(f"{Fore.green}good_count = {good_count}{Style.reset}")
+print(f"{Fore.red}bad_count = {bad_count}{Style.reset}")
+
+print()
+print(f"{Fore.yellow}== END =={Style.reset}")
