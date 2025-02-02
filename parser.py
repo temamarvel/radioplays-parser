@@ -3,6 +3,7 @@ import requests
 import os
 from colored import Fore, Back, Style
 from downloader import download_file
+import math
 
 
 DOWNLOADS_LIMIT = 1000
@@ -102,7 +103,7 @@ for folder_url in root_folders.keys():
     if downloads_count == DOWNLOADS_LIMIT:
         break
     downloads_count += 1
-    print(f"{Style.bold}{Fore.blue}[{downloads_count} / {root_folders_count} ] {int(100 / (root_folders_count / 100))}% complete {Style.reset}")
+    print(f"{Style.bold}{Fore.blue}[{downloads_count} / {root_folders_count} ] {math.ceil(downloads_count / (root_folders_count / 100))}% complete {Style.reset}")
     root_folders[folder_url] = scan_folder(folder_url)
 
 
