@@ -12,7 +12,7 @@ sdk = YCloudML(
         auth=YANDEX_ML_KEY_SECRET,
     )
 
-def translate_to_rusian(name):
+def translate_to_russian(name):
     path = os.path.splitext(name)
     ext = path[1]
     filename = path[0]

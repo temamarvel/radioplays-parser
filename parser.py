@@ -5,24 +5,6 @@ from colored import Fore, Back, Style
 from downloader import download_file
 import math
 
-
-DOWNLOADS_LIMIT = 1000
-
-
-root_url = 'http://audio.arjlover.net/audio/'
-save_folder = "audio/"
-
-
-print(f"{Fore.yellow}== START =={Style.reset}")
-print(f"{Fore.yellow}== Parse audio files from {root_url} =={Style.reset}")
-print()
-
-# uncomment when you need to log downloaded files
-# downloaded_audio = dict()
-
-root_folders = dict()
-
-
 def get_parsed_soup(url):
     response = requests.get(url)
     if response.status_code != 200:
@@ -45,6 +27,7 @@ def get_root_folders(url):
 
         root_folders.update({name: 0})
 
+
 def download_audio(url, name):
     local_folder_path = f"{save_folder}{url}"
     if not os.path.exists(local_folder_path):
@@ -62,6 +45,7 @@ def download_audio(url, name):
         # downloaded_audio.update({f"{url}{name}": filename})
     else:
         print(f"\t{Fore.red}Error! Something wrong with file downloading{Style.reset}")
+
 
 def scan_folder(url):
     full_url = f"{root_url}{url}"
@@ -94,6 +78,20 @@ def scan_folder(url):
     return mp3count
 
 
+DOWNLOADS_LIMIT = 1000
+
+root_url = 'http://audio.arjlover.net/audio/'
+save_folder = "audio/"
+
+print(f"{Fore.yellow}== START =={Style.reset}")
+print(f"{Fore.yellow}== Parse audio files from {root_url} =={Style.reset}")
+print()
+
+# uncomment when you need to log downloaded files
+# downloaded_audio = dict()
+
+root_folders = {}
+
 get_root_folders(root_url)
 
 downloads_count = 0
@@ -106,7 +104,6 @@ for folder_url in root_folders.keys():
     print(f"{Style.bold}{Fore.blue}[{downloads_count} / {root_folders_count} ] {math.ceil(downloads_count / (root_folders_count / 100))}% complete {Style.reset}")
     root_folders[folder_url] = scan_folder(folder_url)
 
-
 print()
 print(f"{Fore.yellow}===================")
 print("MP3 COUNTS")
@@ -114,7 +111,6 @@ print(f"==================={Style.reset}")
 
 good_count = 0
 bad_count = 0
-
 
 for key, value in root_folders.items():
     if value == 1:
