@@ -16,7 +16,7 @@ print()
 good_count = 0
 bad_count = 0
 
-for folder in root_folders:
+for folder in sorted(root_folders):
     if not os.path.isdir(f"{folder}"):
         continue
 
