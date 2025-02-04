@@ -10,11 +10,4 @@ best_result = search_result.best.result
 print(best_type)
 print(best_result)
 
-album = yandex_music_client.albums(13002641)
-
-print(album)
-
-cover = album[0].get_cover_url()
-
-print(cover)
 print(best_result.get_cover_url())
