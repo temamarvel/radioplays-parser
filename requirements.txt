@@ -8,3 +8,4 @@ python-dotenv==1.0.1
 python3-discogs-client==2.7.1
 requests==2.32.3
 yandex-cloud-ml-sdk==0.3.0
+yandex-music==2.2.0
