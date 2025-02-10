@@ -9,12 +9,13 @@ os.chdir(root_path)
 root_folders = list(filter(lambda x: os.path.isdir(x), os.listdir()))
 root_folders_count = len(root_folders)
 
-print(f"{Fore.yellow}Root folders count = {root_folders_count}{Style.reset}")
+print(f"{Fore.blue}Root folders count = {root_folders_count}{Style.reset}")
 
 print()
 
 good_count = 0
 bad_count = 0
+collection_count = 0
 
 for folder in sorted(root_folders):
     if not os.path.isdir(f"{folder}"):
@@ -29,9 +30,17 @@ for folder in sorted(root_folders):
     if folders_count == 0 and mp3_count == 1:
         good_count += 1
         print(f"{Fore.green}{folder} [{folders_count}/{mp3_count}]{Style.reset}")
-    else:
+        continue
+
+    if folders_count == 0 and mp3_count != 1:
+        collection_count += 1
+        print(f"{Fore.yellow}{folder} [{folders_count}/{mp3_count}]{Style.reset}")
+        continue
+
+    if folders_count != 0:
         bad_count += 1
         print(f"{Fore.red}{folder} [{folders_count}/{mp3_count}]{Style.reset}")
+        continue
 
 print()
 
@@ -39,4 +48,5 @@ def percent(count):
     return math.ceil(count / (root_folders_count / 100))
 
 print(f"{Fore.green}good_count = {good_count} [{percent(good_count)}%]{Style.reset}")
+print(f"{Fore.yellow}collection_count = {collection_count} [{percent(collection_count)}%]{Style.reset}")
 print(f"{Fore.red}bad_count = {bad_count} [{percent(bad_count)}%]{Style.reset}")
