@@ -15,7 +15,7 @@ try:
 
         conn.commit()
 
-        curs.execute('SELECT * FROM plays')
+        curs.execute("SELECT * FROM plays")
         all = curs.fetchall()
         print(all)
 
