@@ -3,7 +3,7 @@ from pathlib import Path
 from colored import Fore, Back, Style
 import math
 
-root_path = "audio/"
+root_path = 'audio/'
 os.chdir(root_path)
 
 root_folders = list(filter(lambda x: os.path.isdir(x), os.listdir()))
