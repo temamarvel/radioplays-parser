@@ -1,7 +1,7 @@
 import os
 from colored import Fore, Back, Style
 
-good_folder = 'audio/GOOD_AUDIO'
+good_folder = 'audio/!GOOD_AUDIO'
 os.chdir(good_folder)
 
 folders = os.listdir()
