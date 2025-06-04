@@ -52,8 +52,6 @@ def scan_folder_for_audio(url):
 
     bs = get_parsed_soup(full_url)
 
-    mp3count = 0
-
     for link in bs.find_all('a'):
         name = link.get('href')
 
@@ -67,15 +65,12 @@ def scan_folder_for_audio(url):
         new_url = f"{url}{name}"
 
         if ext == '.mp3':
-            mp3count += 1
             scan_folder_for_covers(url, name)
 
         if ext != '':
             continue
 
-        mp3count += scan_folder_for_audio(new_url)
-
-    return mp3count
+        scan_folder_for_audio(new_url)
 
 def scan_folder_for_covers(url, audio_name):
     full_url = f"{root_url}{url}"
@@ -125,7 +120,7 @@ for folder_url in root_folders.keys():
         break
     downloads_count += 1
     print(f"{Style.bold}{Fore.blue}[{downloads_count} / {root_folders_count} ] {math.ceil(downloads_count / (root_folders_count / 100))}% complete {Style.reset}")
-    root_folders[folder_url] = scan_folder_for_audio(folder_url)
+    scan_folder_for_audio(folder_url)
 
 print()
 print(f"{Fore.yellow}== END =={Style.reset}")
