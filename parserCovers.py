@@ -77,8 +77,6 @@ def scan_folder_for_covers(url, audio_name):
 
     bs = get_parsed_soup(full_url)
 
-    mp3count = 0
-
     for link in bs.find_all('a'):
         name = link.get('href')
 
@@ -90,7 +88,6 @@ def scan_folder_for_covers(url, audio_name):
         ext = path[1]
 
         if ext == '.jpeg' or ext == '.jpg' or ext == '.bmp' or ext == '.png':
-            mp3count += 1
             download_cover_image(url, audio_name, name)
 
         if ext != '':

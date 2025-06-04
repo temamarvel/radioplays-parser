@@ -5,13 +5,13 @@ from colored import Fore, Back, Style
 COVERS_PATH = "audio/!COVERS"
 AUDIOS_PATH = "audio/!GOOD_AUDIO"
 
-coverFolders = sorted(os.listdir(COVERS_PATH))
-audioFolders = sorted(os.listdir(AUDIOS_PATH))
+cover_folders = sorted(os.listdir(COVERS_PATH))
+audio_folders = sorted(os.listdir(AUDIOS_PATH))
 
 LIMIT = 4
 count = 0
 
-for audioFolder in audioFolders:
+for audioFolder in audio_folders:
     if count == LIMIT:
         break
     count += 1
@@ -27,10 +27,10 @@ for audioFolder in audioFolders:
     print(mp3_file_name)
 
     try:
-        coverFolderIndex = coverFolders.index(mp3_file_name)
-        coverFolder = coverFolders[coverFolderIndex]
+        cover_folder_index = cover_folders.index(mp3_file_name)
+        cover_folder = cover_folders[cover_folder_index]
         print(f"{Fore.green}Has cover{Style.reset}")
-        cover_full_Path = os.path.join(COVERS_PATH, coverFolder)
+        cover_full_Path = os.path.join(COVERS_PATH, cover_folder)
         covers = os.listdir(cover_full_Path)
         print(f"{Fore.yellow}{covers}{Style.reset}")
         for cover in covers:

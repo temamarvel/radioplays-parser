@@ -6,15 +6,15 @@ os.chdir(good_folder)
 
 folders = os.listdir()
 
-fileNames = []
+file_names = []
 
 for folder in folders:
     # print(f"{Fore.blue}Folder {folder}{Style.reset}")
     if not os.path.isdir(folder):
         continue
 
-    fileNames.append(os.listdir(folder))
+    file_names.append(os.listdir(folder))
     # print(f"\t{os.listdir(folder)}")
 
-for name in sorted(fileNames):
+for name in sorted(file_names):
     print(name)
