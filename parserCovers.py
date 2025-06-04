@@ -69,7 +69,6 @@ def scan_folder_for_audio(url):
         if ext == '.mp3':
             mp3count += 1
             scan_folder_for_covers(url, name)
-            # download_cover_image(url, name)
 
         if ext != '':
             continue
@@ -95,19 +94,12 @@ def scan_folder_for_covers(url, audio_name):
         filename = path[0]
         ext = path[1]
 
-        # new_url = f"{url}{name}"
-
         if ext == '.jpeg' or ext == '.jpg' or ext == '.bmp' or ext == '.png':
             mp3count += 1
             download_cover_image(url, audio_name, name)
 
         if ext != '':
             continue
-
-        # mp3count += scan_folder_for_audio(new_url)
-
-    return mp3count
-
 
 DOWNLOADS_LIMIT = 3
 
@@ -134,28 +126,6 @@ for folder_url in root_folders.keys():
     downloads_count += 1
     print(f"{Style.bold}{Fore.blue}[{downloads_count} / {root_folders_count} ] {math.ceil(downloads_count / (root_folders_count / 100))}% complete {Style.reset}")
     root_folders[folder_url] = scan_folder_for_audio(folder_url)
-
-# print()
-# print(f"{Fore.yellow}===================")
-# print("MP3 COUNTS")
-# print(f"==================={Style.reset}")
-
-# good_count = 0
-# bad_count = 0
-#
-# for key, value in root_folders.items():
-#     if value == 1:
-#         good_count += 1
-#         # uncomment when need to show log of downloaded audio and count audio files inside folder
-#         print(f"{Fore.green}{key} : {value}{Style.reset}")
-#     else:
-#         bad_count += 1
-#         # uncomment when need to show log of downloaded audio and count audio files inside folder
-#         print(f"{Fore.red}{key} : {value}{Style.reset}")
-#
-# print()
-# print(f"{Fore.green}good_count = {good_count}{Style.reset}")
-# print(f"{Fore.red}bad_count = {bad_count}{Style.reset}")
 
 print()
 print(f"{Fore.yellow}== END =={Style.reset}")
