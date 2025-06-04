@@ -21,7 +21,7 @@ for audioFolder in audioFolders:
         continue
 
     print()
-    print(f"{Fore.blue}{audio_full_path}{Style.reset}")
+    print(f"{Style.bold}{Fore.blue}{audio_full_path}{Style.reset}")
 
     mp3_file_name = os.listdir(audio_full_path)[0]
     print(mp3_file_name)
