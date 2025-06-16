@@ -8,7 +8,7 @@ AUDIOS_PATH = "audio/!GOOD_AUDIO"
 cover_folders = sorted(os.listdir(COVERS_PATH))
 audio_folders = sorted(os.listdir(AUDIOS_PATH))
 
-LIMIT = 4
+LIMIT = 200
 count = 0
 
 for audioFolder in audio_folders:
@@ -23,7 +23,15 @@ for audioFolder in audio_folders:
     print()
     print(f"{Style.bold}{Fore.blue}{audio_full_path}{Style.reset}")
 
-    mp3_file_name = os.listdir(audio_full_path)[0]
+    files_in_folder = os.listdir(audio_full_path)
+    mp3_file_name = files_in_folder[0]
+    for file in files_in_folder:
+        splitFileName = os.path.splitext(file)
+        ext = splitFileName[1]
+        if ext == '.mp3':
+            mp3_file_name = file
+            break
+
     print(mp3_file_name)
 
     try:
