@@ -2,11 +2,20 @@ import os
 
 COVERS_PATH = "audio/!COVERS"
 AUDIOS_PATH = "audio/!GOOD_AUDIO"
+ORGANIZED_PATH = "audio/!ORGANIZED_AUDIO"
 
-folders = sorted(os.listdir(AUDIOS_PATH))
+folders = sorted(os.listdir(ORGANIZED_PATH))
 
 for folder in folders:
-    folder_full_path = os.path.join(AUDIOS_PATH, folder)
+    if folder == '.DS_Store':
+        folder_full_path = os.path.join(ORGANIZED_PATH, folder)
+        print(folder_full_path)
+        os.remove(folder_full_path)
+        print(f"File [{folder_full_path}] is deleted!")
+        print()
+
+
+    folder_full_path = os.path.join(ORGANIZED_PATH, folder)
     print(folder_full_path)
 
     if not os.path.isdir(folder_full_path):
