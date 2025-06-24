@@ -8,7 +8,7 @@ AUDIOS_PATH = "audio/!GOOD_AUDIO"
 cover_folders = sorted(os.listdir(COVERS_PATH))
 audio_folders = sorted(os.listdir(AUDIOS_PATH))
 
-LIMIT = 200
+LIMIT = 500
 count = 0
 
 for audioFolder in audio_folders:

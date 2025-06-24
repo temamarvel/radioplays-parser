@@ -43,7 +43,7 @@ with open(GOOD_FOLDERS_NAMES_TXT_PATH, "r") as good_folders_file:
             translated_name = translated_file.readline().rstrip()
             good_names[good_folder] = translated_name
 
-LIMIT = 5
+LIMIT = 500
 count = 0
 
 used_names = {}
@@ -84,6 +84,12 @@ for key, value in good_names.items():
             src_path = os.path.join(key_folder_path, file)
             dst_path = os.path.join(path_to, f"{new_name}{ext}")
             copy_file(src_path, dst_path)
+
+            metadata_path = os.path.join(path_to, "metadata.txt")
+            with open(metadata_path, 'w') as metadata_file:
+                print(f"{Fore.green}The file [{metadata_path}] is created and open to write.{Style.reset}")
+                metadata_file.write(meta_data)
+                print(f"{Fore.green}All metadata tags have writen to file.{Style.reset}")
 
             for f in files:
                 f_name_parts = os.path.splitext(f)
