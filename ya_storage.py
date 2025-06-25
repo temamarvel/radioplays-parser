@@ -20,6 +20,8 @@ def get_s3_client():
 LIMIT = 15
 count = 0
 
+#todo now it is ok for uploads to storage
+#todo wait for DB part script
 def scan_folder(path: str, items):
     global count
     for item in items:
