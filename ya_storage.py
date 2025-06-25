@@ -17,20 +17,29 @@ def get_s3_client():
 # s3_client = get_s3_client()
 
 
-LIMIT = 5
+LIMIT = 15
 count = 0
 
-folders = sorted(os.listdir(ORGANIZED_PATH))
+def scan_folder(path: str, items):
+    global count
+    for item in items:
+        if count == LIMIT:
+            break
 
-for folder in folders:
-    if count == LIMIT:
-        break
-    count += 1
+        item_path = os.path.join(path, item)
 
-    folder_path = os.path.join(ORGANIZED_PATH, folder)
-    print(folder_path)
-    files = os.listdir(folder_path)
-    # todo sync to object storage
+        if not os.path.isdir(item_path):
+            print(item_path)
+            count += 1
+            continue
+
+        subitems = os.listdir(item_path)
+        scan_folder(item_path, subitems)
+
+
+root_folders = sorted(os.listdir(ORGANIZED_PATH))
+
+scan_folder(ORGANIZED_PATH, root_folders)
 
 # s3_client.put_object(Bucket=YANDEX_BUCKET, Key='test/object_name', Body='TEST')
 # s3_client.put_object(Bucket=YANDEX_BUCKET, Key='test/object_name/test3', Body='TEST')
