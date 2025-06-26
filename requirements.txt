@@ -9,3 +9,5 @@ python3-discogs-client==2.7.1
 requests==2.32.3
 yandex-cloud-ml-sdk==0.3.0
 yandex-music==2.2.0
+sqlalchemy==2.0.41
+psycopg2==2.9.10
