@@ -1,6 +1,8 @@
 import os
 import boto3
+from botocore.exceptions import ClientError
 from dotenv import load_dotenv
+from colored import Fore, Back, Style
 
 load_dotenv()
 
@@ -14,10 +16,20 @@ def get_s3_client():
     session = boto3.session.Session(aws_access_key_id=YANDEX_KEY_ID, aws_secret_access_key=YANDEX_KEY_SECRET)
     return session.client(service_name="s3", endpoint_url="https://storage.yandexcloud.net")
 
-# s3_client = get_s3_client()
+def is_item_uploaded(s3_key):
+    try:
+        s3_client.head_object(Bucket=YANDEX_BUCKET, Key=s3_key)
+        print(f"{Fore.green}The file {Style.bold}[{s3_key}]{Style.reset}{Fore.green} is existed in the bucket.{Style.reset}")
+        return True
+    except ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            print(f"{Fore.yellow}The file {Style.bold}[{s3_key}]{Style.reset}{Fore.yellow} isn't existed in the bucket.{Style.reset}")
+        else:
+            print(f"{Fore.red}Error: {e}{Style.reset}")
+    return False
 
 
-LIMIT = 15
+LIMIT = 2
 count = 0
 
 #todo now it is ok for uploads to storage
@@ -31,28 +43,22 @@ def scan_folder(path: str, items):
         item_path = os.path.join(path, item)
 
         if not os.path.isdir(item_path):
-            print(item_path)
+            print()
+            print(f"{Fore.blue}{item_path}{Style.reset}")
+
+            if not is_item_uploaded(item_path):
+                s3_client.upload_file(item_path, YANDEX_BUCKET, item_path)
+
             count += 1
             continue
 
         subitems = os.listdir(item_path)
         scan_folder(item_path, subitems)
 
+os.chdir(ORGANIZED_PATH)
 
-root_folders = sorted(os.listdir(ORGANIZED_PATH))
+root_folders = sorted(os.listdir())
 
-scan_folder(ORGANIZED_PATH, root_folders)
+s3_client = get_s3_client()
 
-# s3_client.put_object(Bucket=YANDEX_BUCKET, Key='test/object_name', Body='TEST')
-# s3_client.put_object(Bucket=YANDEX_BUCKET, Key='test/object_name/test3', Body='TEST')
-
-#s3_client.upload_file('123.mp3', YANDEX_BUCKET, '123.mp3')
-
-# for key in s3_client.list_objects(Bucket=YANDEX_BUCKET)['Contents']:
-#     print(key['Key'])
-
-# s3_client.upload_file(
-#             fullname,
-#             YANDEX_BUCKET,
-#             ru_filename,
-#         )
+scan_folder("", root_folders)
