@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
+from colored import Fore, Back, Style
+
+from db_models import Play
 
 load_dotenv()
 
@@ -12,31 +15,27 @@ DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 
 connection_string = f"postgresql://{DB_USER}:@{DB_HOST}/{DB_NAME}"
-
 engine = create_engine(connection_string)
-
-Base = declarative_base()
-# todo make method to create a record in DB
-class Play(Base):
-    __tablename__ = "plays"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    s3_key = Column(String, nullable=False)
-
-Base.metadata.create_all(engine)
-
+# Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
-session = Session()
 
-new_play = Play(name = "play from alchemy", s3_key = "key")
+print("Init")
 
-session.add(new_play)
+def add_item_to_database(new_play: Play):
+    session = Session()
+    try:
+        session.add(new_play)
+        session.commit()
+        print(f"{Fore.green}The play {Style.bold}[{new_play.name}]{Style.reset}{Fore.green} has added to DB.{Style.reset}")
+    except Exception as e:
+        session.rollback()
+        print(f"{Fore.red}Error! Something went wrong during adding to DB: {e}. The transaction is rolled back.{Style.reset}")
+    finally:
+        session.close()
 
-session.commit()
+    # plays = session.query(Play).all()
 
-plays = session.query(Play).all()
-for play in plays:
-    print(play.id, play.name, play.s3_key)
-
-session.close()
+# for play in plays:
+#     print(play.id, play.name, play.s3_key)
+#
+# session.close()
