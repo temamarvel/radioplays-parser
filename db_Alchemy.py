@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 from colored import Fore, Back, Style
 
-from db_models import Play
+from db_models import Play, Base
 
 load_dotenv()
 
@@ -39,16 +39,16 @@ def add_item_to_database(new_play: Play):
 def is_play_in_database(play: Play):
     session = Session()
     try:
-        record = session.query(Play).filter(Play.s3_key == play.s3_key).first()
+        record = session.query(Play).filter(Play.s3_folder_key == play.s3_folder_key).first()
         if record:
-            print(f"{Fore.green}The item {Style.bold}[{play.s3_key}]{Style.reset}{Fore.green} is in DB.{Style.reset}")
+            print(f"{Fore.green}The item {Style.bold}[{play.s3_folder_key}]{Style.reset}{Fore.green} is in DB.{Style.reset}")
             return True
         else:
-            print(f"{Fore.red}The item {Style.bold}[{play.s3_key}]{Style.reset}{Fore.red} isn't found in DB.{Style.reset}")
+            print(f"{Fore.red}The item {Style.bold}[{play.s3_folder_key}]{Style.reset}{Fore.red} isn't found in DB.{Style.reset}")
             return False
     except Exception as e:
         session.rollback()
-        print(f"{Fore.red}Error! Something went wrong during adding to DB: {e}. The transaction is rolled back.{Style.reset}")
+        print(f"{Fore.red}Error! Something went wrong during checking existence to DB: {e}. The transaction is rolled back.{Style.reset}")
     finally:
         session.close()
 

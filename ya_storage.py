@@ -45,7 +45,7 @@ def scan_folder(path: str, items):
 
         if (not path) and os.path.isdir(item_path):
             print()
-            new_play = Play(name=item, s3_key=item_path)
+            new_play = Play(name=item, s3_folder_key=item_path)
             if not is_play_in_database(new_play):
                 add_item_to_database(new_play)
 

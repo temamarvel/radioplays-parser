@@ -8,4 +8,4 @@ class Play(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    s3_key = Column(String, nullable=False)
+    s3_folder_key = Column(String, nullable=False)
