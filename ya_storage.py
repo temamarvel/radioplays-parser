@@ -4,6 +4,9 @@ from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 from colored import Fore, Back, Style
 
+from db_Alchemy import add_item_to_database, is_play_in_database
+from db_models import Play
+
 load_dotenv()
 
 YANDEX_KEY_ID = os.getenv("YANDEX_KEY_ID")
@@ -29,11 +32,9 @@ def is_item_uploaded(s3_key):
     return False
 
 
-LIMIT = 2
+LIMIT = 15
 count = 0
 
-#todo now it is ok for uploads to storage
-#todo wait for DB part script
 def scan_folder(path: str, items):
     global count
     for item in items:
@@ -42,12 +43,18 @@ def scan_folder(path: str, items):
 
         item_path = os.path.join(path, item)
 
-        if not os.path.isdir(item_path):
+        if (not path) and os.path.isdir(item_path):
             print()
+            new_play = Play(name=item, s3_key=item_path)
+            if not is_play_in_database(new_play):
+                add_item_to_database(new_play)
+
+        if not os.path.isdir(item_path):
             print(f"{Fore.blue}{item_path}{Style.reset}")
 
-            if not is_item_uploaded(item_path):
-                s3_client.upload_file(item_path, YANDEX_BUCKET, item_path)
+            # todo uncomment for upload
+            # if not is_item_uploaded(item_path):
+            #     s3_client.upload_file(item_path, YANDEX_BUCKET, item_path)
 
             count += 1
             continue

@@ -1,4 +1,5 @@
 import os
+from math import trunc
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
@@ -34,6 +35,24 @@ def add_item_to_database(new_play: Play):
         session.close()
 
     # plays = session.query(Play).all()
+
+def is_play_in_database(play: Play):
+    session = Session()
+    try:
+        record = session.query(Play).filter(Play.s3_key == play.s3_key).first()
+        if record:
+            print(f"{Fore.green}The item {Style.bold}[{play.s3_key}]{Style.reset}{Fore.green} is in DB.{Style.reset}")
+            return True
+        else:
+            print(f"{Fore.red}The item {Style.bold}[{play.s3_key}]{Style.reset}{Fore.red} isn't found in DB.{Style.reset}")
+            return False
+    except Exception as e:
+        session.rollback()
+        print(f"{Fore.red}Error! Something went wrong during adding to DB: {e}. The transaction is rolled back.{Style.reset}")
+    finally:
+        session.close()
+
+    return False
 
 # for play in plays:
 #     print(play.id, play.name, play.s3_key)
