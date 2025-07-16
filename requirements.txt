@@ -12,3 +12,4 @@ yandex-cloud-ml-sdk==0.3.0
 yandex-music==2.2.0
 sqlalchemy==2.0.41
 psycopg2==2.9.10
+pillow==11.3.0
