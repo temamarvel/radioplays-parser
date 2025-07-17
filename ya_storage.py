@@ -15,6 +15,8 @@ YANDEX_BUCKET = os.getenv("YANDEX_BUCKET")
 
 ORGANIZED_PATH = "audio/!ORGANIZED_AUDIO"
 
+allowed_file_ext = [".mp3", ".webp"]
+
 def get_s3_client():
     session = boto3.session.Session(aws_access_key_id=YANDEX_KEY_ID, aws_secret_access_key=YANDEX_KEY_SECRET)
     return session.client(service_name="s3", endpoint_url="https://storage.yandexcloud.net")
@@ -51,6 +53,11 @@ def scan_folder(path: str, items):
 
         if not os.path.isdir(item_path):
             print(f"{Fore.blue}{item_path}{Style.reset}")
+
+            name, ext = os.path.splitext(item_path)
+            if not ext in allowed_file_ext:
+                print(f"{Fore.yellow}The file {item_path} extension isn't allowed to upload to s3. The file skipped!{Style.reset}")
+                continue
 
             # todo uncomment for upload
             # if not is_item_uploaded(item_path):
