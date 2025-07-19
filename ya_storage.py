@@ -1,3 +1,4 @@
+import mimetypes
 import os
 import boto3
 from botocore.exceptions import ClientError
@@ -34,7 +35,7 @@ def is_item_uploaded(s3_key):
     return False
 
 
-LIMIT = 15
+LIMIT = 25
 count = 0
 
 def scan_folder(path: str, items):
@@ -59,9 +60,13 @@ def scan_folder(path: str, items):
                 print(f"{Fore.yellow}The file {item_path} extension isn't allowed to upload to s3. The file skipped!{Style.reset}")
                 continue
 
+            content_type, _ = mimetypes.guess_type(item_path)
+            if content_type is None:
+                content_type = "application/octet-stream"
+
             # todo uncomment for upload
-            # if not is_item_uploaded(item_path):
-            #     s3_client.upload_file(item_path, YANDEX_BUCKET, item_path)
+            if not is_item_uploaded(item_path):
+                s3_client.upload_file(item_path, YANDEX_BUCKET, item_path)
 
             count += 1
             continue
