@@ -35,7 +35,7 @@ def is_item_uploaded(s3_key):
     return False
 
 
-LIMIT = 25
+LIMIT = 55
 count = 0
 
 def scan_folder(path: str, items):
@@ -60,13 +60,16 @@ def scan_folder(path: str, items):
                 print(f"{Fore.yellow}The file {item_path} extension isn't allowed to upload to s3. The file skipped!{Style.reset}")
                 continue
 
-            content_type, _ = mimetypes.guess_type(item_path)
-            if content_type is None:
-                content_type = "application/octet-stream"
+
 
             # todo uncomment for upload
             if not is_item_uploaded(item_path):
-                s3_client.upload_file(item_path, YANDEX_BUCKET, item_path)
+                content_type, _ = mimetypes.guess_type(item_path)
+                if content_type is None:
+                    content_type = "application/octet-stream"
+
+                s3_client.upload_file(item_path, YANDEX_BUCKET, item_path, ExtraArgs={"ContentType": content_type})
+                print(f"{Fore.green}The file {Style.bold}[{item_path}]{Style.reset}{Fore.yellow} is uploaded to the bucket.{Style.reset}")
 
             count += 1
             continue
