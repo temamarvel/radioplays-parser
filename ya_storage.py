@@ -35,8 +35,11 @@ def is_item_uploaded(s3_key):
     return False
 
 
-LIMIT = 200
+LIMIT = 20
 count = 0
+
+def remove_brackets(name: str):
+    return name.split('[')[0]
 
 def scan_folder(path: str, items):
     global count
@@ -48,9 +51,12 @@ def scan_folder(path: str, items):
 
         if (not path) and os.path.isdir(item_path):
             print()
-            new_play = Play(name=item, s3_folder_key=item_path)
-            if not is_play_in_database(new_play):
-                add_item_to_database(new_play)
+            name = item
+            title = remove_brackets(name)
+            new_play = Play(title=title, name=name, s3_folder_key=item_path)
+            # if not is_play_in_database(new_play):
+            #     add_item_to_database(new_play)
+            add_item_to_database(new_play)
 
         if not os.path.isdir(item_path):
             print(f"{Fore.blue}{item_path}{Style.reset}")

@@ -3,6 +3,8 @@ from math import trunc
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.dialects.mssql.information_schema import constraints
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker, declarative_base
 from colored import Fore, Back, Style
 
@@ -25,9 +27,16 @@ print("Init")
 def add_item_to_database(new_play: Play):
     session = Session()
     try:
-        session.add(new_play)
-        session.commit()
-        print(f"{Fore.green}The play {Style.bold}[{new_play.name}]{Style.reset}{Fore.green} has added to DB.{Style.reset}")
+        stmt = (insert(Play).values(title=new_play.title, name=new_play.name, s3_folder_key=new_play.s3_folder_key)
+                .on_conflict_do_nothing(constraint='uq_name')
+                .returning(Play.id))
+        # session.add(new_play)
+        result = session.execute(stmt).scalar()
+        if result:
+            session.commit()
+            print(f"{Fore.green}The play {Style.bold}[{new_play.name}]{Style.reset}{Fore.green} has added to DB.{Style.reset}")
+        else:
+            print(f"{Fore.red}Duplicate! The play {Style.bold}[{new_play.name}]{Style.reset}{Fore.red} hasn't been added to DB.{Style.reset}")
     except Exception as e:
         session.rollback()
         print(f"{Fore.red}Error! Something went wrong during adding to DB: {e}. The transaction is rolled back.{Style.reset}")
