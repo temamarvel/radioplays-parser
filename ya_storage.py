@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from colored import Fore, Back, Style
 
 from db_Alchemy import add_item_to_database, is_play_in_database
-from db_models import Play
+from db_models import Play, S3File
 
 load_dotenv()
 
@@ -41,7 +41,7 @@ count = 0
 def remove_brackets(name: str):
     return name.split('[')[0]
 
-def scan_folder(path: str, items):
+def scan_folder(path: str, items, play_id: int or None = None):
     global count
     for item in items:
         if count == LIMIT:
@@ -49,14 +49,16 @@ def scan_folder(path: str, items):
 
         item_path = os.path.join(path, item)
 
+        # todo analyze and rewrite add to DB logic
+        new_play_id = play_id
         if (not path) and os.path.isdir(item_path):
             print()
             name = item
             title = remove_brackets(name)
-            new_play = Play(title=title, name=name, s3_folder_key=item_path)
+            new_play = Play(title=title, name=name)
             # if not is_play_in_database(new_play):
             #     add_item_to_database(new_play)
-            add_item_to_database(new_play)
+            new_play_id = add_item_to_database(new_play)
 
         if not os.path.isdir(item_path):
             print(f"{Fore.blue}{item_path}{Style.reset}")
@@ -66,7 +68,9 @@ def scan_folder(path: str, items):
                 print(f"{Fore.yellow}The file {item_path} extension isn't allowed to upload to s3. The file skipped!{Style.reset}")
                 continue
 
-
+            prefix = item_path.rsplit('/', 1)[0]
+            new_s3_file = S3File(play_id=play_id, s3_prefix=prefix, s3_key=item_path)
+            add_item_to_database(new_s3_file)
 
             # todo uncomment for upload
             # if not is_item_uploaded(item_path):
@@ -74,7 +78,7 @@ def scan_folder(path: str, items):
             #     if content_type is None:
             #         content_type = "application/octet-stream"
             #
-            #     s3_client.upload_file(item_path, YANDEX_BUCKET, item_path, ExtraArgs={"ContentType": content_type})
+            #     # s3_client.upload_file(item_path, YANDEX_BUCKET, item_path, ExtraArgs={"ContentType": content_type})
             #     print(f"{Fore.green}The file {Style.bold}[{item_path}]{Style.reset}{Fore.yellow} is uploaded to the bucket.{Style.reset}")
             #
             # count += 1
@@ -82,7 +86,7 @@ def scan_folder(path: str, items):
 
         if os.path.isdir(item_path):
             subitems = os.listdir(item_path)
-            scan_folder(item_path, subitems)
+            scan_folder(item_path, subitems, new_play_id)
 
 os.chdir(ORGANIZED_PATH)
 

@@ -2,13 +2,12 @@ import os
 from math import trunc
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.dialects.mssql.information_schema import constraints
+from sqlalchemy import create_engine, inspect, UniqueConstraint
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 from colored import Fore, Back, Style
 
-from db_models import Play, Base
+from db_models import Play, S3File, Base
 
 load_dotenv()
 
@@ -19,27 +18,57 @@ DB_NAME = os.getenv("DB_NAME")
 
 connection_string = f"postgresql://{DB_USER}:@{DB_HOST}/{DB_NAME}"
 engine = create_engine(connection_string)
-# Base.metadata.create_all(engine)
+Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 print("Init")
 
-def add_item_to_database(new_play: Play):
+# Типизация: только Play или S3File
+def add_item_to_database(obj: Play or S3File):
     session = Session()
     try:
-        stmt = (insert(Play).values(title=new_play.title, name=new_play.name, s3_folder_key=new_play.s3_folder_key)
-                .on_conflict_do_nothing(constraint='uq_name')
-                .returning(Play.id))
-        # session.add(new_play)
+        model_class = type(obj)
+
+        data = {
+            column.key: getattr(obj, column.key)
+            for column in inspect(obj).mapper.column_attrs
+            if column.key != "id"
+        }
+
+        table_args = getattr(model_class, "__table_args__", [])
+        if not isinstance(table_args, (list, tuple)):
+            table_args = [table_args]
+
+        constraint_name = None
+        for arg in table_args:
+            if isinstance(arg, UniqueConstraint) and arg.name:
+                constraint_name = arg.name
+                break
+
+        if not constraint_name:
+            raise ValueError(f"No named UniqueConstraint found in model {model_class.__name__}")
+
+
+        stmt = (
+            insert(model_class)
+            .values(**data)
+            .on_conflict_do_nothing(constraint=constraint_name)
+            .returning(model_class.id)
+        )
+
         result = session.execute(stmt).scalar()
+
         if result:
             session.commit()
-            print(f"{Fore.green}The play {Style.bold}[{new_play.name}]{Style.reset}{Fore.green} has added to DB.{Style.reset}")
+            print(f"{Fore.green}✅ Added to {model_class.__name__}: {data}{Style.reset}")
         else:
-            print(f"{Fore.red}Duplicate! The play {Style.bold}[{new_play.name}]{Style.reset}{Fore.red} hasn't been added to DB.{Style.reset}")
+            print(f"{Fore.yellow}⚠️ Duplicate in {model_class.__name__}, not added: {data}{Style.reset}")
+
+        return result
     except Exception as e:
         session.rollback()
-        print(f"{Fore.red}Error! Something went wrong during adding to DB: {e}. The transaction is rolled back.{Style.reset}")
+        print(f"{Fore.red}❌ Error adding {model_class.__name__}: {e}{Style.reset}")
+        return None
     finally:
         session.close()
 
@@ -48,12 +77,12 @@ def add_item_to_database(new_play: Play):
 def is_play_in_database(play: Play):
     session = Session()
     try:
-        record = session.query(Play).filter(Play.s3_folder_key == play.s3_folder_key).first()
+        record = session.query(Play).filter(Play.s3_prefix == play.s3_prefix).first()
         if record:
-            print(f"{Fore.green}The item {Style.bold}[{play.s3_folder_key}]{Style.reset}{Fore.green} is in DB.{Style.reset}")
+            print(f"{Fore.green}The item {Style.bold}[{play.s3_prefix}]{Style.reset}{Fore.green} is in DB.{Style.reset}")
             return True
         else:
-            print(f"{Fore.red}The item {Style.bold}[{play.s3_folder_key}]{Style.reset}{Fore.red} isn't found in DB.{Style.reset}")
+            print(f"{Fore.red}The item {Style.bold}[{play.s3_prefix}]{Style.reset}{Fore.red} isn't found in DB.{Style.reset}")
             return False
     except Exception as e:
         session.rollback()
