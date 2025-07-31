@@ -69,7 +69,7 @@ def scan_folder(path: str, items, play_id: int or None = None):
                 continue
 
             prefix = item_path.rsplit('/', 1)[0]
-            new_s3_file = S3File(play_id=play_id, s3_prefix=prefix, s3_key=item_path)
+            new_s3_file = S3File(play_id=play_id, type=ext, s3_prefix=prefix, s3_key=item_path)
             add_item_to_database(new_s3_file)
 
             # todo uncomment for upload
