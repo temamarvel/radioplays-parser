@@ -32,6 +32,6 @@ class MelodyspiderSpider(scrapy.Spider):
         yield {
             "title": response.css("h1::text").get(),
             # "text": response.css("div.content p::text").getall(),
-            # "images": response.css("img::attr(src)").getall(),
+            "images": response.css("picture.gallery__picture img::attr(src)").getall(),
             # "links": response.css("a::attr(href)").getall()
         }
