@@ -172,3 +172,4 @@ cython_debug/
 .DS_Store
 .idea/
 audio
+melodyparser/data.json
