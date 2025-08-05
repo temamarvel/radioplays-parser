@@ -32,7 +32,7 @@ class MelodyspiderSpider(scrapy.Spider):
     def parse_detail(self, response):
         item = MelodyparserItem()
         item['title'] = response.css("h1::text").get()
-        item['image_urls'] = response.css("img::attr(src)").getall()
+        item['image_urls'] = response.css("div.gallery__slide img::attr(src)").getall()
 
         # если пути относительные — превратим в абсолютные
         item['image_urls'] = [response.urljoin(url) for url in item['image_urls']]

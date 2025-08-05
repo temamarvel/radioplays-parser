@@ -27,5 +27,5 @@ class MyImagePipeline(ImagesPipeline):
         title = re.sub(r'[^\w\-_\. ]', '_', title)  # удаляем опасные символы
 
         # Имя файла
-        image_guid = os.path.basename(request.url)
-        return f"{title}/{image_guid}"
+        _, ext = os.path.splitext(request.url)
+        return f"{title}/{title}_main{ext}"
