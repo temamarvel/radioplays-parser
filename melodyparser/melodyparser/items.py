@@ -9,4 +9,6 @@ import scrapy
 class MelodyparserItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    title = scrapy.Field()
+    image_urls = scrapy.Field()  # список URL-ов картинок
+    images = scrapy.Field()

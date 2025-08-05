@@ -1,5 +1,7 @@
 import scrapy
 
+from ..items import MelodyparserItem
+
 
 class MelodyspiderSpider(scrapy.Spider):
     name = "melodyspider"
@@ -28,10 +30,18 @@ class MelodyspiderSpider(scrapy.Spider):
         #     yield response.follow(next_page, callback=self.parse)
 
     def parse_detail(self, response):
+        item = MelodyparserItem()
+        item['title'] = response.css("h1::text").get()
+        item['image_urls'] = response.css("img::attr(src)").getall()
+
+        # если пути относительные — превратим в абсолютные
+        item['image_urls'] = [response.urljoin(url) for url in item['image_urls']]
+
+        yield item
         # Парсим детальную информацию
-        yield {
-            "title": response.css("h1::text").get(),
-            # "text": response.css("div.content p::text").getall(),
-            "images": response.css("picture.gallery__picture img::attr(src)").getall(),
-            # "links": response.css("a::attr(href)").getall()
-        }
+        # yield {
+        #     "title": response.css("h1::text").get(),
+        #     # "text": response.css("div.content p::text").getall(),
+        #     "images": response.css("picture.gallery__picture img::attr(src)").getall(),
+        #     # "links": response.css("a::attr(href)").getall()
+        # }
