@@ -173,3 +173,4 @@ cython_debug/
 .idea/
 audio
 melodyparser/data.json
+melodyparser/images
