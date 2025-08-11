@@ -134,14 +134,32 @@ class MelodyspiderSpider(scrapy.Spider):
         item['image_urls'] = [response.urljoin(u) for u in item['image_urls']]
 
         # дата записи
-        record = None
+
         props_container = response.css(".detail__props .props")
+
+        record = None
+        release = None
+        props_lines = []
+
         for block in props_container.css(".props__prop"):
             label = clean_text(block.css(".props__label::text").get())
-            if label and label.strip(':') == "Запись":
-                record = clean_text(" ".join(block.css(".props__value ::text").getall()))
-                break
+            value_text = clean_text(" ".join(block.css(".props__value ::text").getall()))
+
+            if not label:
+                continue  # пустая метка — это, например, музыкальные ссылки, разберём отдельно
+
+            if label.strip(':') == "Запись":
+                record = value_text
+            elif label.strip(':') == "Выпуск":
+                release = value_text
+            else:
+                # собираем в текст: "Метка: значение"
+                props_lines.append(f"{label} {value_text}")
+
+        # сохраняем
         item['date_of_record'] = record
+        item['release'] = release
+        item['props_text'] = "\n".join(props_lines) if props_lines else None
 
         # ссылки
         item['links'] = extract_music_links(props_container, response.url)

@@ -12,6 +12,8 @@ class MelodyparserItem(scrapy.Item):
     image_urls = scrapy.Field()  # для ImagesPipeline (вход)
     images = scrapy.Field()      # сюда Scrapy положит инфо о скачанных файлах (выход)
     date_of_record = scrapy.Field()
+    release = scrapy.Field()
+    props_text = scrapy.Field()
     links = scrapy.Field()
     description = scrapy.Field()
     # credits = scrapy.Field()

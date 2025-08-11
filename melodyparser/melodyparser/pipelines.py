@@ -76,6 +76,8 @@ class MyImagePipeline(ImagesPipeline):
             "url": item.get('url'),
             "title": item.get('title'),
             "record": item.get('date_of_record'),
+            "release": item.get('release'),
+            "props_text": item.get('props_text'),
             "links": item.get('links'),
             # "credits": item.get('credits'),
             # "cast": item.get('cast'),
