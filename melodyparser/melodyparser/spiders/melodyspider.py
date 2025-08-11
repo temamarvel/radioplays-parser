@@ -104,12 +104,12 @@ class MelodyspiderSpider(scrapy.Spider):
 
     def parse(self, response):
         # 1. Находим карточки
-        cards = response.css("div.entity-snippet a::attr(href)").get()
+        cards = response.css("div.entity-snippet a.entity-snippet__illustration::attr(href)").getall()
         print(f"!!cards!!={cards}")
-        # for card_url in cards:
-        #     full_url = response.urljoin(card_url)
-        #     print(f"!!full_url!!={full_url}")
-        #     yield scrapy.Request(full_url, callback=self.parse_detail)
+        for card_url in cards:
+            full_url = response.urljoin(card_url)
+            print(f"!!full_url!!={full_url}")
+            yield scrapy.Request(full_url, callback=self.parse_detail)
 
 
         # todo make real parser
@@ -119,9 +119,9 @@ class MelodyspiderSpider(scrapy.Spider):
         yield scrapy.Request(full_url, callback=self.parse_detail)
 
         # 2. Переход на следующую страницу
-        next_page = response.css("li.pagination__item_type_next a::attr(href)").get()
-        if next_page:
-            yield response.follow(next_page, callback=self.parse)
+        # next_page = response.css("li.pagination__item_type_next a::attr(href)").get()
+        # if next_page:
+        #     yield response.follow(next_page, callback=self.parse)
 
 
     def parse_detail(self, response):
