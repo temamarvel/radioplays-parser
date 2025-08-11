@@ -7,8 +7,13 @@ import scrapy
 
 
 class MelodyparserItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+    url = scrapy.Field()
     title = scrapy.Field()
-    image_urls = scrapy.Field()  # список URL-ов картинок
-    images = scrapy.Field()
+    image_urls = scrapy.Field()  # для ImagesPipeline (вход)
+    images = scrapy.Field()      # сюда Scrapy положит инфо о скачанных файлах (выход)
+    date_of_record = scrapy.Field()
+    links = scrapy.Field()
+    description = scrapy.Field()
+    # credits = scrapy.Field()
+    # cast = scrapy.Field()
+    folder_hint = scrapy.Field()  # опционально: имя папки (каталожный № и т.п.)
