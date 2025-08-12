@@ -9,11 +9,11 @@ DISKOGS_TOKEN = os.getenv("DISKOGS_TOKEN")
 diskogs = discogs_client.Client('ExampleApplication/0.1', user_token=DISKOGS_TOKEN)
 
 def get_diskogs_release(query):
-    release = diskogs.search(query, type='release')
+    release = diskogs.search(query, type='master')
     return release.page(1)[0]
 
 
-# page = get_diskogs_release("Алиса в стране чудес")
-#
-# print(page.title)
-# print(page.year)
+page = get_diskogs_release("Алиса в стране чудес")
+
+print(page.title)
+print(page.year)
