@@ -31,3 +31,22 @@ class S3File(Base):
     __table_args__ = (
         UniqueConstraint('s3_key', name='uq_s3_key'),
     )
+
+
+class PlayInfo(Base):
+    __tablename__ = "play_infos"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    main_cover = Column(String)
+    alt_main_cover = Column(String)
+    covers = Column(String)
+    author = Column(String)
+    year = Column(Integer)
+    description = Column(String)
+    # s3_prefix = Column(String, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('name', name='uq_info_name'),
+    )

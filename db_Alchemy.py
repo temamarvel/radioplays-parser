@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker
 from colored import Fore, Back, Style
 
-from db_models import Play, S3File, Base
+from db_models import Play, S3File, Base, PlayInfo
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ Session = sessionmaker(bind=engine)
 print("Init")
 
 # Типизация: только Play или S3File
-def add_item_to_database(obj: Play or S3File):
+def add_item_to_database(obj: Play or S3File or PlayInfo):
     session = Session()
     try:
         model_class = type(obj)
