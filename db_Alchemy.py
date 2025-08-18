@@ -74,6 +74,19 @@ def add_item_to_database(obj: Play or S3File or PlayInfo):
 
     # plays = session.query(Play).all()
 
+def update_column_in_database(full_name: str, cover_path: str):
+    session = Session()
+    try:
+        record: PlayInfo = session.query(PlayInfo).filter_by(name = full_name).first()
+        if record:
+            print(f"{Fore.green}The item {Style.bold}[{full_name}]{Style.reset}{Fore.green} updated.{Style.reset}")
+            record.main_cover = cover_path
+            session.commit()
+        else:
+            print(f"{Fore.red}The item {Style.bold}[{full_name}]{Style.reset}{Fore.red} isn't found in DB.{Style.reset}")
+    finally:
+        session.close()
+
 def is_play_in_database(play: Play):
     session = Session()
     try:
