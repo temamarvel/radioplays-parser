@@ -3,6 +3,7 @@ import os
 import discogs_client
 from dotenv import load_dotenv
 from colored import Fore, Back, Style
+import json
 
 load_dotenv()
 
@@ -27,6 +28,11 @@ def remove_brackets(name: str):
 
 # page = get_diskogs_release("Алиса в стране чудес")
 
+def save_to_file(data, path: str):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"{Fore.yellow} The release saved to {path}!{Style.reset}")
+
 for folder in folders:
     folder_path = os.path.join(ORGANIZED_PATH, folder)
     if not os.path.isdir(folder_path):
@@ -37,6 +43,7 @@ for folder in folders:
         master_release = get_diskogs_release(name, 'master')
         if master_release:
             print(f"{Fore.green} The {folder} has MASTER RELEASE!{Style.reset}")
+            save_to_file(master_release.data, os.path.join(folder_path, "diskogs_master.json"))
             continue
         else:
             print(f"{Fore.red} The {folder} doesn't have MASTER RELEASE!{Style.reset}")
@@ -44,6 +51,7 @@ for folder in folders:
         release = get_diskogs_release(name, 'release')
         if release:
             print(f"{Fore.green} The {folder} has RELEASE!{Style.reset}")
+            save_to_file(release.data, os.path.join(folder_path, "diskogs_release.json"))
             continue
         else:
             print(f"{Fore.red} The {folder} doesn't have RELEASE!{Style.reset}")
