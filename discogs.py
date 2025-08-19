@@ -43,14 +43,19 @@ for folder in folders:
         master_release = get_diskogs_release(name, 'master')
         if master_release:
             print(f"{Fore.green} The {folder} has MASTER RELEASE!{Style.reset}")
+            master_release.refresh()
             save_to_file(master_release.data, os.path.join(folder_path, "diskogs_master.json"))
-            continue
         else:
             print(f"{Fore.red} The {folder} doesn't have MASTER RELEASE!{Style.reset}")
 
-        release = get_diskogs_release(name, 'release')
+        release = None
+        if master_release:
+            release = master_release.main_release
+        else:
+            release = get_diskogs_release(name, 'release')
         if release:
             print(f"{Fore.green} The {folder} has RELEASE!{Style.reset}")
+            release.refresh()
             save_to_file(release.data, os.path.join(folder_path, "diskogs_release.json"))
             continue
         else:
