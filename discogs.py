@@ -12,7 +12,9 @@ DISKOGS_TOKEN = os.getenv("DISKOGS_TOKEN")
 
 ORGANIZED_PATH = "audio/!ORGANIZED_AUDIO"
 
-folders = sorted(os.listdir(ORGANIZED_PATH))
+row_folders = sorted(os.listdir(ORGANIZED_PATH))
+
+filtered_folders = [folder for folder in row_folders if not os.path.isfile(os.path.join(ORGANIZED_PATH, folder, "diskogs_release.json"))]
 
 diskogs = discogs_client.Client('ExampleApplication/0.1', user_token=DISKOGS_TOKEN)
 
@@ -34,43 +36,49 @@ def save_to_file(data, path: str):
         json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"{Fore.yellow} The release saved to {path}!{Style.reset}")
 
-master_release_count = 0
-release_count = 0
+def request_to_diskogs(folders: list[str]):
+    master_release_count = 0
+    release_count = 0
 
-for folder in folders:
-    folder_path = os.path.join(ORGANIZED_PATH, folder)
-    if not os.path.isdir(folder_path):
-        continue
-
-    name = remove_brackets(folder)
-    try:
-        time.sleep(0.2)
-        master_release = get_diskogs_release(name, 'master')
-        if master_release:
-            print(f"{Fore.green} The {folder} has MASTER RELEASE!{Style.reset}")
-            master_release.refresh()
-            save_to_file(master_release.data, os.path.join(folder_path, "diskogs_master.json"))
-            master_release_count += 1
-        else:
-            print(f"{Fore.red} The {folder} doesn't have MASTER RELEASE!{Style.reset}")
-
-        release = None
-        if master_release:
-            release = master_release.main_release
-        else:
-            release = get_diskogs_release(name, 'release')
-        if release:
-            print(f"{Fore.green} The {folder} has RELEASE!{Style.reset}")
-            release.refresh()
-            save_to_file(release.data, os.path.join(folder_path, "diskogs_release.json"))
-            release_count += 1
+    for folder in folders:
+        folder_path = os.path.join(ORGANIZED_PATH, folder)
+        if not os.path.isdir(folder_path):
             continue
-        else:
-            print(f"{Fore.red} The {folder} doesn't have RELEASE!{Style.reset}")
-    except Exception as e:
-        print(f"{Fore.red}ERROR! {e} Something goes wrong during the {folder} get release info!{Style.reset}")
 
-print(f"{Fore.blue}MASTER RELEASES count = {master_release_count}{Style.reset}")
-print(f"{Fore.blue}RELEASES count = {release_count}{Style.reset}")
+        name = remove_brackets(folder)
+        try:
+            time.sleep(0.2)
+            master_release = get_diskogs_release(name, 'master')
+            if master_release:
+                print(f"{Fore.green} The {folder} has MASTER RELEASE!{Style.reset}")
+                master_release.refresh()
+                save_to_file(master_release.data, os.path.join(folder_path, "diskogs_master.json"))
+                master_release_count += 1
+            else:
+                print(f"{Fore.red} The {folder} doesn't have MASTER RELEASE!{Style.reset}")
+
+            release = None
+            if master_release:
+                release = master_release.main_release
+            else:
+                release = get_diskogs_release(name, 'release')
+            if release:
+                print(f"{Fore.green} The {folder} has RELEASE!{Style.reset}")
+                release.refresh()
+                save_to_file(release.data, os.path.join(folder_path, "diskogs_release.json"))
+                release_count += 1
+                continue
+            else:
+                print(f"{Fore.red} The {folder} doesn't have RELEASE!{Style.reset}")
+        except Exception as e:
+            print(f"{Fore.red}ERROR! {e} Something goes wrong during the {folder} get release info!{Style.reset}")
+
+    print(f"{Fore.blue}MASTER RELEASES count = {master_release_count}{Style.reset}")
+    print(f"{Fore.blue}RELEASES count = {release_count}{Style.reset}")
+
+request_to_diskogs(filtered_folders)
+
+
+
 # print(page.title)
 # print(page.year)
