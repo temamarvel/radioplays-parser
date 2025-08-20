@@ -1,4 +1,5 @@
 import os
+import time
 
 import discogs_client
 from dotenv import load_dotenv
@@ -33,6 +34,9 @@ def save_to_file(data, path: str):
         json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"{Fore.yellow} The release saved to {path}!{Style.reset}")
 
+master_release_count = 0
+release_count = 0
+
 for folder in folders:
     folder_path = os.path.join(ORGANIZED_PATH, folder)
     if not os.path.isdir(folder_path):
@@ -40,11 +44,13 @@ for folder in folders:
 
     name = remove_brackets(folder)
     try:
+        time.sleep(0.2)
         master_release = get_diskogs_release(name, 'master')
         if master_release:
             print(f"{Fore.green} The {folder} has MASTER RELEASE!{Style.reset}")
             master_release.refresh()
             save_to_file(master_release.data, os.path.join(folder_path, "diskogs_master.json"))
+            master_release_count += 1
         else:
             print(f"{Fore.red} The {folder} doesn't have MASTER RELEASE!{Style.reset}")
 
@@ -57,10 +63,14 @@ for folder in folders:
             print(f"{Fore.green} The {folder} has RELEASE!{Style.reset}")
             release.refresh()
             save_to_file(release.data, os.path.join(folder_path, "diskogs_release.json"))
+            release_count += 1
             continue
         else:
             print(f"{Fore.red} The {folder} doesn't have RELEASE!{Style.reset}")
     except Exception as e:
         print(f"{Fore.red}ERROR! {e} Something goes wrong during the {folder} get release info!{Style.reset}")
+
+print(f"{Fore.blue}MASTER RELEASES count = {master_release_count}{Style.reset}")
+print(f"{Fore.blue}RELEASES count = {release_count}{Style.reset}")
 # print(page.title)
 # print(page.year)
