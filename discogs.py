@@ -1,5 +1,6 @@
 import os
 import time
+import unicodedata
 
 import discogs_client
 from dotenv import load_dotenv
@@ -14,7 +15,7 @@ ORGANIZED_PATH = "audio/!ORGANIZED_AUDIO"
 
 row_folders = sorted(os.listdir(ORGANIZED_PATH))
 
-filtered_folders = [folder for folder in row_folders if not os.path.isfile(os.path.join(ORGANIZED_PATH, folder, "diskogs_release.json"))]
+filtered_folders = [unicodedata.normalize("NFC", folder) for folder in row_folders if not os.path.isfile(os.path.join(ORGANIZED_PATH, folder, "diskogs_release.json"))]
 
 diskogs = discogs_client.Client('ExampleApplication/0.1', user_token=DISKOGS_TOKEN)
 
