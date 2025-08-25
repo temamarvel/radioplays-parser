@@ -174,3 +174,5 @@ cython_debug/
 audio
 melodyparser/data.json
 melodyparser/images
+melodyparser/data2.csv
+melodyparser/data copy.json
