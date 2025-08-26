@@ -3,24 +3,36 @@ import json
 
 ROOT_DIR = "audio/!ORGANIZED_AUDIO"
 
+def pick_fields(d: dict, keys: list[str]) -> dict:
+    return {k: d[k] for k in keys if k in d}
+
 def process_diskogs_release(json_path: str) -> dict:
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     title = data.get("title")
     released = data.get("released")
-    images = data.get("images", [])
-    extraartists = data.get("extraartists", [])
 
     simplified_artists = [
-        {"anv": a.get("anv"), "role": a.get("role")}
-        for a in extraartists if "anv" in a or "role" in a
+        pick_fields(extraartist, ["anv", "role"])
+        for extraartist in data.get("extraartists", [])
     ]
+
+    alt_cover = None
+    images = []
+
+    for img in data.get("images", []):
+        simplified = pick_fields(img, ["type", "uri", "uri150"])
+        if img.get("type") == "primary" and not alt_cover:
+            alt_cover = simplified
+        else:
+            images.append(simplified)
 
     return {
         "title": title,
         "released": released,
         "extraartists": simplified_artists,
+        "alt_cover": alt_cover,
         "images": images
     }
 
