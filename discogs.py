@@ -32,8 +32,22 @@ def remove_brackets(name: str):
 
 # page = get_diskogs_release("Алиса в стране чудес")
 
+def remove_old(folders: list[str]):
+    for folder in folders:
+        folder_path = os.path.join(ORGANIZED_PATH, folder)
+        if not os.path.isdir(folder_path):
+            continue
+        master_path = os.path.join(folder_path, "diskogs_master.json")
+        if os.path.exists(master_path):
+            os.remove(master_path)
+        release_path = os.path.join(folder_path, "diskogs_release.json")
+        if os.path.exists(release_path):
+            os.remove(release_path)
+
 def save_to_file(data, path: str):
     with open(path, "w", encoding="utf-8") as f:
+        title = data["title"]
+        print(f"{Fore.yellow} The release title is {title}!{Style.reset}")
         json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"{Fore.yellow} The release saved to {path}!{Style.reset}")
 
@@ -46,7 +60,8 @@ def request_to_diskogs(folders: list[str]):
         if not os.path.isdir(folder_path):
             continue
 
-        name = remove_brackets(folder)
+        name = remove_brackets(folder).replace("Ё", "Е").replace("ё", "е")
+
         try:
             time.sleep(0.2)
             master_release = get_diskogs_release(name, 'master')
@@ -77,7 +92,9 @@ def request_to_diskogs(folders: list[str]):
     print(f"{Fore.blue}MASTER RELEASES count = {master_release_count}{Style.reset}")
     print(f"{Fore.blue}RELEASES count = {release_count}{Style.reset}")
 
-request_to_diskogs(filtered_folders)
+remove_old(row_folders)
+
+request_to_diskogs(row_folders)
 
 
 
