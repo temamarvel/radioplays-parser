@@ -13,7 +13,7 @@ DISKOGS_TOKEN = os.getenv("DISKOGS_TOKEN")
 
 ORGANIZED_PATH = "audio/!ORGANIZED_AUDIO"
 
-row_folders = sorted(os.listdir(ORGANIZED_PATH))
+row_folders = [unicodedata.normalize("NFC", folder) for folder in sorted(os.listdir(ORGANIZED_PATH))]
 
 filtered_folders = [unicodedata.normalize("NFC", folder) for folder in row_folders if not os.path.isfile(os.path.join(ORGANIZED_PATH, folder, "diskogs_release.json"))]
 
@@ -44,10 +44,12 @@ def remove_old(folders: list[str]):
         if os.path.exists(release_path):
             os.remove(release_path)
 
-def save_to_file(data, path: str):
+def save_to_file(data, path: str, name):
     with open(path, "w", encoding="utf-8") as f:
         title = data["title"]
         print(f"{Fore.yellow} The release title is {title}!{Style.reset}")
+        if remove_brackets(name).lower() != title.lower():
+            print(f"{Fore.red} NAME={name} != TITLE={title}!{Style.reset}")
         json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"{Fore.yellow} The release saved to {path}!{Style.reset}")
 
@@ -68,7 +70,7 @@ def request_to_diskogs(folders: list[str]):
             if master_release:
                 print(f"{Fore.green} The {folder} has MASTER RELEASE!{Style.reset}")
                 master_release.refresh()
-                save_to_file(master_release.data, os.path.join(folder_path, "diskogs_master.json"))
+                save_to_file(master_release.data, os.path.join(folder_path, "diskogs_master.json"), folder)
                 master_release_count += 1
             else:
                 print(f"{Fore.red} The {folder} doesn't have MASTER RELEASE!{Style.reset}")
@@ -81,7 +83,7 @@ def request_to_diskogs(folders: list[str]):
             if release:
                 print(f"{Fore.green} The {folder} has RELEASE!{Style.reset}")
                 release.refresh()
-                save_to_file(release.data, os.path.join(folder_path, "diskogs_release.json"))
+                save_to_file(release.data, os.path.join(folder_path, "diskogs_release.json"), folder)
                 release_count += 1
                 continue
             else:
