@@ -70,16 +70,30 @@ def process_melodyinfo(path: str) -> dict:
         print(f"⚠️ Не удалось прочитать melodyinfo.json: {e}")
         return {}
 
+def process_ya_info(path: str) -> dict:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            return {"ya_link": data.get("ya_url")}
+
+        except Exception as e:
+            print(f"⚠️ Не удалось прочитать melodyinfo.json: {e}")
+            return {}
+
 for dirpath, dirnames, filenames in os.walk(ROOT_DIR):
     if "diskogs_release.json" in filenames:
         diskogs_path = os.path.join(dirpath, "diskogs_release.json")
         melodyinfo_path = os.path.join(dirpath, "melodyinfo.json")
+        ya_info_path = os.path.join(dirpath, "ya_info.json")
         output_path = os.path.join(dirpath, "data.json")
 
         try:
             base = process_diskogs_release(diskogs_path)
             if os.path.isfile(melodyinfo_path):
                 base.update(process_melodyinfo(melodyinfo_path))
+            if os.path.isfile(ya_info_path):
+                    base.update(process_ya_info(ya_info_path))
             with open(output_path, "w", encoding="utf-8") as out:
                 json.dump(base, out, ensure_ascii=False, indent=2)
             print(f"✅ Сохранён data.json в {dirpath}")
