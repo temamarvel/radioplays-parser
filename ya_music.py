@@ -1,6 +1,6 @@
 import os.path
 import unicodedata
-from yandex_music import Client
+from yandex_music import Client, Track, Album
 # from discogs import get_diskogs_release
 from colored import Fore, Back, Style
 import json
@@ -27,9 +27,11 @@ for folder in folders:
 
     ya_release = None
 
+    print(f"{Fore.blue}Folder = [{folder}]{Style.reset}")
+
     json_path = os.path.join(folder_path, "data.json")
     if not os.path.exists(json_path):
-        ya_release = yandex_music_client.search(remove_brackets(folder), type_= "track")
+        ya_release = yandex_music_client.search(remove_brackets(folder))
     else:
         try:
             with open(json_path, "r", encoding="utf-8") as f:
@@ -39,17 +41,25 @@ for folder in folders:
             continue
 
         title = data.get("title")
-        ya_release = yandex_music_client.search(title, type_= "track")
+        ya_release = yandex_music_client.search(title)
 
-    if not ya_release.tracks:
+
+    if not ya_release or not ya_release.best:
         continue
 
-    ya_release_best = ya_release.tracks.results[0]
+    ya_release_best = ya_release.best.result
 
     if not ya_release_best:
         continue
 
-    ya_url = f"https://music.yandex.ru/album/{ya_release_best.albums[0].id}/track/{ya_release_best.id}"
+    ya_url = None
+    if isinstance(ya_release_best, Track):
+        ya_url = f"https://music.yandex.ru/album/{ya_release_best.albums[0].id}/track/{ya_release_best.id}"
+    if isinstance(ya_release_best, Album):
+        ya_url = f"https://music.yandex.ru/album/{ya_release_best.id}"
+
+    if not ya_url:
+        continue
 
     result = { "title": folder,
                "ya_title": ya_release_best.title,
