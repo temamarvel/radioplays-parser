@@ -40,12 +40,18 @@ def remove_old(folders: list[str]):
         master_path = os.path.join(folder_path, "diskogs_master.json")
         if os.path.exists(master_path):
             os.remove(master_path)
+            print(f"{Fore.blue} File {master_path} is deleted!{Style.reset}")
+
         release_path = os.path.join(folder_path, "diskogs_release.json")
         if os.path.exists(release_path):
             os.remove(release_path)
+            print(f"{Fore.blue} File {release_path} is deleted!{Style.reset}")
+
         data_path = os.path.join(folder_path, "data.json")
         if os.path.exists(data_path):
             os.remove(data_path)
+            print(f"{Fore.blue} File {data_path} is deleted!{Style.reset}")
+
 
 def save_to_file(data, path: str, name):
     with open(path, "w", encoding="utf-8") as f:
@@ -99,7 +105,7 @@ def request_to_diskogs(folders: list[str]):
 
 remove_old(row_folders)
 
-# request_to_diskogs(row_folders)
+request_to_diskogs(row_folders)
 
 
 
